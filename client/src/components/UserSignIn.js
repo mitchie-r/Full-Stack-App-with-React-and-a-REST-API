@@ -1,9 +1,10 @@
 import { useContext, useRef, useState } from 'react';
-import { NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 import UserContext from '../context/UserContext';
 import ValidationErrors from './ValidationErrors';
 
+// User Signin Function using emailAddress and password
 const UserSignIn = () => {
     const { actions } = useContext(UserContext);
     const navigate = useNavigate();
@@ -22,7 +23,7 @@ const UserSignIn = () => {
         }
 
         const credentials = {
-            username: emailAddress.current.value,
+            emailAddress: emailAddress.current.value,
             password: password.current.value
         };
 
@@ -53,12 +54,12 @@ const UserSignIn = () => {
                     <label htmlFor="emailAddress">Email Address</label>
                     <input id="emailAddress" name="emailAddress" type="email" ref={emailAddress} />
                     <label htmlFor="password">Password</label>
-                    <input id="password" name="password" type="password" ref={password} />
+                    <input id="password" name="password" type="password" ref={password} autoComplete="current-password"/>
                     <button className="button" type="submit">Sign In</button>
                     <button className="button button-secondary" onClick={handleCancel}>Cancel</button>
                 </form>
                 <p>
-                    Don't have a user account? Click here to <NavLink to="/signup">sign up</NavLink>!
+                    Don't have a user account? Click here to <Link to="/signup">sign up</Link>!
                 </p>
             </div>
         </main>

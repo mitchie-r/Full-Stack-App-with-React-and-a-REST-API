@@ -1,59 +1,56 @@
 import { createContext, useState } from "react";
 import Cookies from "js-cookie"
-
+import { api } from "../utils/apiHelper";
 
 const UserContext = createContext(null);
 
+// UserProvider to wrap index.js
 export const UserProvider = (props) => {
-  const cookie = Cookies.get("authenticatedUser");
-  const [authUser, setAuthUser] = useState(cookie ? JSON.parse(cookie) : null)
-
+    const cookie = Cookies.get("authenticatedUser");
+    const [authUser, setAuthUser] = useState(cookie ? JSON.parse(cookie) : null)
+    // signin with extra error checking
     const signIn = async (credentials) => {
-      const encodedCredentials = btoa(`${credentials.emailAddress}:${credentials.password}`);
-      const fetchOptions = {
-          method: "GET",
-          headers: {
-              Authorization: `Basic ${encodedCredentials}`,
-          },
+        try {
+          const response = await api("/users", "GET", null, credentials);
+          if (response.status === 200) {
+            const user = await response.json();
+            user.password = credentials.password; 
+            setAuthUser(user);
+            Cookies.set("authenticatedUser", JSON.stringify(user), { expires: 1 });
+            return user;
+          } else if (response.status === 401) {
+            console.error("Sign-in failed: Invalid credentials"); 
+            return null;
+          } else {
+            console.error(`Sign-in failed with status code ${response.status}`);
+            throw new Error();
+          }
+        } catch (error) {
+          console.error("Sign-in failed:", error);
+          throw error; 
+        }
       };
-      const response = await fetch("http://localhost:5000/api/users", fetchOptions);
-      if (response.status === 200) {
-        const user = await response.json();
-        user.password = credentials.password;
-        setAuthUser(user);
-        Cookies.set("authenticatedUser", JSON.stringify(user), { expires: 1 });
-        return user;
-    } else if (response.status === 401) {
-        // (401 = unauthorized)
 
-        return null;
-    } else {
-        throw new Error();
-    }
-};
+    // Signout user
+    const signOut = () => {
+        setAuthUser(null);
+        Cookies.remove("authenticatedUser");
+    };
 
-// function for signing out a user
-const signOut = () => {
-    // reset authUser state
-    setAuthUser(null);
-    // reset cookies
-    Cookies.remove("authenticatedUser");
-};
-
-return (
-    <UserContext.Provider
-        value={{
-            authUser,
-            actions: {
-                signIn, 
-                signOut,
-            },
-        }}
-    >
-        {props.children}
-    </UserContext.Provider>
-);
-};
+    return (
+        <UserContext.Provider
+            value={{
+                authUser,
+                actions: {
+                    signIn,
+                    signOut
+                },
+            }}
+        >
+            {props.children}
+        </UserContext.Provider>
+    );
+}
 
 
 export default UserContext;

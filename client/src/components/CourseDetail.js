@@ -1,77 +1,96 @@
-import React, { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-/* import ReactMarkdown from 'react-markdown'; */
-import UserContext from "../context/UserContext"
+import Markdown from 'react-markdown';
 
-function CourseDetail({ context }) {
-  const [course, setCourse] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+import UserContext from '../context/UserContext';
+import { api } from '../utils/apiHelper';
 
-  const { id } = useParams(); 
-  //const {authUser } = useContext(UserContext);
-  const navigate = useNavigate(); 
+// Function to pull and display a specific course's detail
+const CourseDetail = () => {
+  const { authUser } = useContext(UserContext);
+  const [course, setCourse] = useState([]);
+
+  const { id } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCourse = async () => {
-      setIsLoading(true);
       try {
-          console.log("Fetching Course");
-          const response = await fetch("http://localhost:5000/api/courses/" + id);
-          console.log('Initial response:', response); // Inspect the full response object 
-          console.log(response.status);
-  
-          if (response.status === 200) {
-              const data = await response.json();
-              console.log('JSON Data:', data);
-              setCourse(data); 
-          } else { // Handling non-200 responses
-              console.log('Non-200 status code:', response.status);
-              throw new Error('Non-200 response');
-          }   
+        console.log("Fetching Course");
+        // Request course by id
+        const response = await api(`/courses/${id}`, "GET", null, authUser);
+
+        if (response.status === 200) {
+          const data = await response.json();
+          console.log('JSON Data:', data);
+          setCourse(data);
+        } else if (response.status === 500) {
+          navigate("/error");
+        } else if (response.status === 404) {
+          navigate("/notfound");
+        } else {
+          throw new Error();
+        }
       } catch (error) {
-          console.log("Error fetching Course", error); 
-          setError(error); // Ensure error message is captured
-      } finally {
-          setIsLoading(false); 
+        console.log("Error fetching Course", error);
+        navigate("/error");
       }
-  };
+    };
 
     fetchCourse();
-  }, [id]); 
+  }, [authUser, id, navigate]);
 
 
-  const handleDelete = async () => {
+  const handleDelete = async (event) => {
+    event.preventDefault();
+
     try {
-      const response = await fetch(`http://localhost:5000/api/courses/${id}`, {
-        method: 'DELETE' 
-      });
-      if (!response.ok) {
-        throw new Error('Delete request failed'); 
+      const response = await api(`/courses/${id}`, "DELETE", null, authUser)
+      if (response.status === 204) {
+        navigate('/');
+      } else if (response.status === 403) {
+        navigate("/forbidden")
+      } else if (response.status === 500) {
+        navigate("/error");
+      } else {
+        throw new Error();
       }
-      navigate('/courses'); 
     } catch (error) {
-      // Handle deletion errors (e.g., display an error message)
+      console.log("Error when deleting course", error);
+      navigate("/error");
     }
   };
-
-  if (isLoading) {
-    return <div>Loading course...</div>;
-  }
-
-  if (error) {
-    return <div>Error fetching course: {error.message}</div>;
-  }
-
   return (
-    <div>
-      <h2>{course.title}</h2> 
-      {/* ... display other course details */}
-      <button onClick={handleDelete}>Delete Course</button>
-      <Link to={`/courses/${id}/update`}>Update Course</Link> 
-      <Link to="/courses">Back to Courses</Link> 
-    </div>
+    <main>
+      <div className="actions--bar">
+        <div className="wrap">
+         <p> INSERT LINKS HERE </p>
+        </div>
+      </div>
+
+      <div className="wrap">
+        <h2>Course Detail</h2>
+        <form>
+          <div className="main--flex">
+            <div>
+              <h3 className="course--detail--title">Course</h3>
+              <h4 className="course--name">{course.title}</h4>
+              <p>By {course.user?.firstName} {course.user?.lastName}</p>
+              <Markdown>{course.description}</Markdown>
+            </div>
+            <div>
+              <h3 className="course--detail--title">Estimated Time</h3>
+              <p>{course.estimatedTime}</p>
+
+              <h3 className="course--detail--title">Materials Needed</h3>
+              <ul className="course--detail--list">
+                <Markdown>{course.materialsNeeded}</Markdown>
+              </ul>
+            </div>
+          </div>
+        </form>
+      </div>
+    </main>
   );
 }
-
 export default CourseDetail;

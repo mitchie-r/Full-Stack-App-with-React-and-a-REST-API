@@ -1,14 +1,16 @@
 import { useContext, useRef, useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import UserContext from '../context/UserContext';
 import ValidationErrors from './ValidationErrors';
+import { api } from '../utils/apiHelper';
 
-const UserSignUp = () => {
+// Function to sign user up and sign them in
+const UserSignIn = () => {
   const { actions } = useContext(UserContext);
   const navigate = useNavigate();
 
-  // State
+  // State 
   const firstName = useRef(null);
   const lastName = useRef(null);
   const emailAddress = useRef(null);
@@ -18,6 +20,7 @@ const UserSignUp = () => {
   // event handlers
   const handleSubmit = async (event) => {
     event.preventDefault();
+    console.log("Submitted!")
 
     const user = {
       firstName: firstName.current.value,
@@ -25,20 +28,12 @@ const UserSignUp = () => {
       emailAddress: emailAddress.current.value,
       password: password.current.value
     }
-    const fetchOptions = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8',
-      },
-      body: JSON.stringify(user),
-    };
-
     try {
-      const response = await fetch("http://localhost:5000/api/users")
+      const response = await api("/users", "POST", user)
       if (response.status === 201) {
-        console.log(`${user.username} is successfully signed up and authenticated!`);
+        console.log(`${user.firstName}${user.lastName} is successfully signed up and authenticated!`);
         await actions.signIn(user);
-        navigate("/authenticated");
+        navigate("/");
       } else if (response.status === 400) {
         const data = await response.json();
         setErrors(data.errors);
@@ -50,19 +45,18 @@ const UserSignUp = () => {
       navigate("/error");
     }
   }
-
+  // Cancel navigates to the Courses page
   const handleCancel = (event) => {
     event.preventDefault();
     navigate("/");
   }
 
   return (
-    <div> {/* Root element for JSX */}
+    <div> 
       <main>
         <div className="form--centered">
           <h2>Sign Up</h2>
-          {/* Display ValidationErrors component here */}
-          <ValidationErrors errors={errors} />
+          <ValidationErrors errors={errors} /> 
           <form onSubmit={handleSubmit}>
             <label htmlFor="firstName">First Name</label>
             <input id="firstName" name="firstName" ref={firstName} type="text" />
@@ -71,7 +65,7 @@ const UserSignUp = () => {
             <label htmlFor="emailAddress">Email Address</label>
             <input id="emailAddress" name="emailAddress" ref={emailAddress} type="email" />
             <label htmlFor="password">Password</label>
-            <input id="password" name="password" ref={password} type="password" />
+            <input id="password" name="password" ref={password} type="password" autocomplete="current-password"/>
             <button className="button" type="submit">
               Sign Up
             </button>
@@ -80,7 +74,7 @@ const UserSignUp = () => {
             </button>
           </form>
           <p>
-            Already have a user account? Click here to <NavLink to="/signin">sign in</NavLink>!
+            Already have a user account? Click here to <Link to="/signin">sign in</Link>!
           </p>
         </div>
       </main>
@@ -88,4 +82,4 @@ const UserSignUp = () => {
   );
 }
 
-export default UserSignUp;
+export default UserSignIn;
