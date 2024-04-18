@@ -5,52 +5,44 @@ import ValidationErrors from './ValidationErrors';
 
 import UserContext from '../context/UserContext';
 
+
 const UserSignIn = () => {
-
-    // User Context
     const { actions } = useContext(UserContext);
-  
-    // Navigate hook
     const navigate = useNavigate();
-
-    // Location hook
     const location = useLocation();
 
-    // State
     const emailAddress = useRef(null);
-    const password  = useRef(null);
+    const password = useRef(null);
     const [errors, setErrors] = useState([]);
 
-    // event handlers
-    const handleSubmit = async e => {
-        e.preventDefault();
+    // Event Handlers
+    const handleSubmit = async (event) => {
+        event.preventDefault();
         let from = '/';
         if (location.state) {
             from = location.state.from;
         }
 
         const credentials = {
-            emailAddress: emailAddress.current.value,
-            password: password.current.value,
-        }
+            username: emailAddress.current.value,
+            password: password.current.value
+        };
 
         try {
             const user = await actions.signIn(credentials);
             if (user) {
                 navigate(from);
             } else {
-                setErrors(["Sign-in was unsuccessful"])
+                setErrors(["Sign-in was unsuccessful"]);
             }
         } catch (error) {
-            console.log("errors: " + errors);
+            console.log(error);
             navigate("/error");
         }
-
     }
 
-    // Cancel
-    const handleCancel = e => {
-        e.preventDefault();
+    const handleCancel = (event) => {
+        event.preventDefault();
         navigate("/");
     }
 
