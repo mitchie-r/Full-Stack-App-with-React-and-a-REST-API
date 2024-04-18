@@ -29,6 +29,7 @@ const UserSignIn = () => {
 
         try {
             const user = await actions.signIn(credentials);
+            console.log(user);
             if (user) {
                 navigate(from);
             } else {
@@ -39,7 +40,7 @@ const UserSignIn = () => {
             navigate("/error");
         }
     }
-
+    // Cancel navigates to home page
     const handleCancel = (event) => {
         event.preventDefault();
         navigate("/");

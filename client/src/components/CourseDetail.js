@@ -10,7 +10,7 @@ const CourseDetail = () => {
   const { authUser } = useContext(UserContext);
   const [course, setCourse] = useState([]);
 
-  const { id } = useParams();
+  let { id } = useParams();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -64,7 +64,16 @@ const CourseDetail = () => {
     <main>
       <div className="actions--bar">
         <div className="wrap">
-         <p> INSERT LINKS HERE </p>
+          {authUser && authUser.id === course.userId && (
+            <>
+              <Link className="button button-update" to={`/courses/${course.id}/update`}>
+                Update Course
+              </Link>
+              <button className="button button-delete" onClick={handleDelete}>
+                Delete Course
+              </button>
+            </>
+          )}
         </div>
       </div>
 
