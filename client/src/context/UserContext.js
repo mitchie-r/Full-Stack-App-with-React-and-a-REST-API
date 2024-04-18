@@ -1,56 +1,48 @@
 import { createContext, useState } from "react";
-import Cookies from "js-cookie"
-import { api } from "../utils/apiHelper";
+import Cookies from "js-cookie";
+import { api } from '../utils/apiHelper';
 
 const UserContext = createContext(null);
 
-// UserProvider to wrap index.js
 export const UserProvider = (props) => {
     const cookie = Cookies.get("authenticatedUser");
-    const [authUser, setAuthUser] = useState(cookie ? JSON.parse(cookie) : null)
-    // signin with extra error checking
+    const [authUser, setAuthUser] = useState(cookie ? JSON.parse(cookie) : null);
+
     const signIn = async (credentials) => {
-        try {
-          const response = await api("/users", "GET", null, credentials);
-          if (response.status === 200) {
+
+        const response = await api("/users", "GET", null, credentials);
+
+        if (response.status === 200) {
             const user = await response.json();
-            user.password = credentials.password; 
+            user.password = credentials.password;
             setAuthUser(user);
-            Cookies.set("authenticatedUser", JSON.stringify(user), { expires: 1 });
+            Cookies.set("authenticatedUser", JSON.stringify(user), {expires: 1});
             return user;
           } else if (response.status === 401) {
-            console.error("Sign-in failed: Invalid credentials"); 
             return null;
           } else {
-            console.error(`Sign-in failed with status code ${response.status}`);
             throw new Error();
           }
-        } catch (error) {
-          console.error("Sign-in failed:", error);
-          throw error; 
-        }
-      };
+    }
 
-    // Signout user
     const signOut = () => {
         setAuthUser(null);
         Cookies.remove("authenticatedUser");
-    };
+    }
 
     return (
-        <UserContext.Provider
-            value={{
-                authUser,
-                actions: {
-                    signIn,
-                    signOut
-                },
-            }}
-        >
-            {props.children}
+        <UserContext.Provider value={{
+          authUser,
+          actions: {
+            signIn,
+            signOut
+          }
+        }}>
+          {props.children}
         </UserContext.Provider>
-    );
-}
+      );
+      
 
+}
 
 export default UserContext;

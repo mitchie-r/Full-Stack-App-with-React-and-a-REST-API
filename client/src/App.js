@@ -1,7 +1,7 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 
-
+import "./styles/global.css"
 import Courses from './components/Courses'; 
 import CourseDetail from './components/CourseDetail';  
 import CreateCourse from './components/CreateCourse';
@@ -14,6 +14,7 @@ import PrivateRoute from './components/PrivateRoute';
 import NotFound from './components/NotFound';
 import Forbidden from './components/Forbidden';
 import UnhandledError from './components/UnhandledError';
+
 
 
 function App() {
