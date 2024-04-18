@@ -1,48 +1,45 @@
 import { createContext, useState } from "react";
-import Cookies from "js-cookie";
+import Cookies from "js-cookie"; 
 import { api } from '../utils/apiHelper';
 
 const UserContext = createContext(null);
 
-export const UserProvider = (props) => {
+export const UserProvider = ({ children }) => { 
     const cookie = Cookies.get("authenticatedUser");
     const [authUser, setAuthUser] = useState(cookie ? JSON.parse(cookie) : null);
 
     const signIn = async (credentials) => {
-
-        const response = await api("/users", "GET", null, credentials);
-
-        if (response.status === 200) {
-            const user = await response.json();
-            user.password = credentials.password;
-            setAuthUser(user);
-            Cookies.set("authenticatedUser", JSON.stringify(user), {expires: 1});
-            return user;
-          } else if (response.status === 401) {
-            return null;
-          } else {
-            throw new Error();
-          }
-    }
+        try {
+            const response = await api("/users", "GET", null, credentials);
+            if (response.status === 200) {
+                const user = await response.json();
+                user.password = credentials.password; // Store password for future use 
+                setAuthUser(user);
+                Cookies.set("authenticatedUser", JSON.stringify(user), { expires: 1 });
+                return user;
+            } else if (response.status === 401) {
+                console.error("Sign-in failed: Invalid credentials");
+                return null;
+            } else {
+                console.error(`Sign-in failed with status code ${response.status}`);
+                throw new Error();
+            }
+        } catch (error) {
+            console.error("Sign-in failed:", error);
+            throw error; 
+        }
+    };
 
     const signOut = () => {
         setAuthUser(null);
         Cookies.remove("authenticatedUser");
-    }
+    };
 
     return (
-        <UserContext.Provider value={{
-          authUser,
-          actions: {
-            signIn,
-            signOut
-          }
-        }}>
-          {props.children}
+        <UserContext.Provider value={{ authUser, actions: { signIn, signOut } }}>
+            {children} 
         </UserContext.Provider>
-      );
-      
-
-}
+    );
+};
 
 export default UserContext;
