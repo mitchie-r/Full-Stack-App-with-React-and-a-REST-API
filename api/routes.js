@@ -12,10 +12,8 @@ const router = express.Router();
 
 // Route that returns a list of users.
 router.get('/users', authenticateUser, asyncHandler(async (req, res) => {
-  let users = await User.findAll({
-    attributes: { exclude: ['createdAt', 'updatedAt', 'password'] }
-  });
-  res.json(users);
+  const { id, firstName, lastName, emailAddress } = req.currentUser;
+  res.status(200).json({ id, firstName, lastName, emailAddress });
 }));
 
 // Route that creates a new user and catches SequelizeUniqueConstraint Error
@@ -75,8 +73,8 @@ router.put('/courses/:id', [
   const course = await Course.findByPk(req.params.id);
   if (course) {
     if (course.userId === req.currentUser.id) {
-    await course.update(req.body);
-    res.json(course);
+      await course.update(req.body);
+      res.json(course);
     } else {
       res.status(403).json({ message: 'You are not authorized to update this course.' });
     }
