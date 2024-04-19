@@ -40,7 +40,7 @@ const CourseDetail = () => {
     fetchCourse();
   }, [authUser, id, navigate]);
 
-
+   // Handles course deletion
   const handleDelete = async (event) => {
     event.preventDefault();
 

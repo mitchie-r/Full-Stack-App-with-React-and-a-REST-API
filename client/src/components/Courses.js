@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import { api } from '../utils/apiHelper';
 
+// Function to get all courses
 const Courses = () => {
   const [courses, setCourses] = useState([]);
 
@@ -32,7 +33,7 @@ const Courses = () => {
 
     fetchCourses();
   }, [navigate]);
-
+  // Displays all courses
   return (
     <div className="wrap main--grid">
       <h2>Courses</h2>

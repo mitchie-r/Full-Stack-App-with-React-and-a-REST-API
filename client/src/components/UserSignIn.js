@@ -5,7 +5,7 @@ import ValidationErrors from './ValidationErrors';
 
 import UserContext from '../context/UserContext';
 
-
+// Function  to sign in user
 const UserSignIn = () => {
     const { actions } = useContext(UserContext);
     const navigate = useNavigate();
@@ -22,7 +22,7 @@ const UserSignIn = () => {
         if (location.state) {
             from = location.state.from;
         }
-
+        // User credentials - email address and password
         const credentials = {
             emailAddress: emailAddress.current.value,
             password: password.current.value
@@ -40,7 +40,7 @@ const UserSignIn = () => {
             navigate("/error");
         }
     }
-
+    // Navigates to home page if cancel is selected
     const handleCancel = (event) => {
         event.preventDefault();
         navigate("/");

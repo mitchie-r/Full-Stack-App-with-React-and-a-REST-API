@@ -4,10 +4,10 @@ import UserContext from "../context/UserContext";
 import { api } from "../utils/apiHelper";
 import ValidationErrors from "./ValidationErrors";
 
+// Function to Create Course
 const CreateCourse = () => {
     const { authUser } = useContext(UserContext);
     const navigate = useNavigate();
-    const location = useLocation();
     const courseTitle = useRef(null);
     const courseDescription = useRef(null);
     const estimatedTime = useRef(null);
@@ -17,7 +17,7 @@ const CreateCourse = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         console.log("Submitted!");
-
+        // New course values
         const newCourse = {
             userId: authUser.id,
             title: courseTitle.current.value,
@@ -46,7 +46,7 @@ const CreateCourse = () => {
             navigate("/error");
         }
     };
-
+    // Routes back to home route when cancel is selected
     const handleCancel = (event) => {
         event.preventDefault();
         navigate("/");

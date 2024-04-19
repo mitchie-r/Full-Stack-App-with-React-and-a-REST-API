@@ -4,6 +4,8 @@ import UserContext from "../context/UserContext";
 import { api } from "../utils/apiHelper";
 import ValidationErrors from "./ValidationErrors"; // Import ValidationErrors component
 
+
+// Function to update course
 const UpdateCourse = () => {
     const { authUser } = useContext(UserContext);
     const navigate = useNavigate();
@@ -14,7 +16,7 @@ const UpdateCourse = () => {
     const materialsNeeded = useRef(null);
 
     const [errors, setErrors] = useState([]);
-
+    // retrieve course
     useEffect(() => {
         const fetchCourse = async () => {
             try {
@@ -41,10 +43,10 @@ const UpdateCourse = () => {
 
         fetchCourse();
     }, [authUser, id, navigate]);
-
+    // Handles course revision submission
     const handleSubmit = async (event) => {
         event.preventDefault();
-
+        // Values to update the course
         const updateCourse = {
             userId: authUser.id,
             title: courseTitle.current.value,
