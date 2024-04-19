@@ -17,17 +17,16 @@ const CourseDetail = () => {
     const fetchCourse = async () => {
       try {
         console.log("Fetching Course");
-        // Request course by id
         const response = await api(`/courses/${id}`, "GET", null, authUser);
-
         if (response.status === 200) {
           const data = await response.json();
           console.log('JSON Data:', data);
           setCourse(data);
+        } else if (response.status === 404) { // Moved 404 handling inside fetchCourse
+          console.log("Not Found!");
+          navigate("/notfound");
         } else if (response.status === 500) {
           navigate("/error");
-        } else if (response.status === 404) {
-          navigate("/notfound");
         } else {
           throw new Error();
         }
@@ -36,10 +35,10 @@ const CourseDetail = () => {
         navigate("/error");
       }
     };
-
+  
     fetchCourse();
   }, [authUser, id, navigate]);
-
+  
    // Handles course deletion
   const handleDelete = async (event) => {
     event.preventDefault();

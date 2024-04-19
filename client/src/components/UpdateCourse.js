@@ -15,7 +15,7 @@ const UpdateCourse = () => {
     const courseDescription = useRef(null);
     const estimatedTime = useRef(null);
     const materialsNeeded = useRef(null);
-
+    const [course, setCourse] = useState([]);
     const [errors, setErrors] = useState([]);
     // retrieve course
     useEffect(() => {
@@ -26,12 +26,11 @@ const UpdateCourse = () => {
 
                 if (response.status === 200) {
                     const data = await response.json();
-                    console.log(data);
-                    console.log(authUser);
+                    setCourse(data);
                     if (data && data.user) {
-                       if (data.user.id !== authUser.id) {
-                          navigate("/forbidden");
-                       }
+                        if (data.user.id !== authUser.id) {
+                            navigate("/forbidden");
+                        }
                     }
                     // Set course state here
                 } else if (response.status === 500) {
@@ -94,7 +93,13 @@ const UpdateCourse = () => {
                     <div className="main--flex">
                         <div>
                             <label htmlFor="courseTitle">Course Title</label>
-                            <input id="courseTitle" name="courseTitle" type="text" ref={courseTitle} />
+                            <input
+                                id="courseTitle"
+                                name="courseTitle"
+                                type="text"
+                                ref={courseTitle}
+                                defaultValue={course ? course.title : ''}
+                            />
                             <p>
                                 By {authUser.firstName} {authUser.lastName}
                             </p>
@@ -103,13 +108,25 @@ const UpdateCourse = () => {
                                 id="courseDescription"
                                 name="courseDescription"
                                 ref={courseDescription}
+                                defaultValue={course ? course.description : ''}
                             ></textarea>
                         </div>
                         <div>
                             <label htmlFor="estimatedTime">Estimated Time</label>
-                            <input id="estimatedTime" name="estimatedTime" type="text" ref={estimatedTime} />
+                            <input
+                                id="estimatedTime"
+                                name="estimatedTime"
+                                type="text"
+                                ref={estimatedTime}
+                                defaultValue={course ? course.estimatedTime : ''}
+                            />
                             <label htmlFor="materialsNeeded">Materials Needed</label>
-                            <textarea id="materialsNeeded" name="materialsNeeded" ref={materialsNeeded}></textarea>
+                            <textarea
+                                id="materialsNeeded"
+                                name="materialsNeeded"
+                                ref={materialsNeeded}
+                                defaultValue={course ? course.materialsNeeded : ''}
+                            ></textarea>
                         </div>
                     </div>
                     <button className="button" type="submit">
