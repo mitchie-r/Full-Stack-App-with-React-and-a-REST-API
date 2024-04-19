@@ -9,7 +9,8 @@ import ValidationErrors from "./ValidationErrors"; // Import ValidationErrors co
 const UpdateCourse = () => {
     const { authUser } = useContext(UserContext);
     const navigate = useNavigate();
-    const { id } = useParams();
+    let { id } = useParams();
+    console.log(id);
     const courseTitle = useRef(null);
     const courseDescription = useRef(null);
     const estimatedTime = useRef(null);
@@ -21,11 +22,16 @@ const UpdateCourse = () => {
         const fetchCourse = async () => {
             try {
                 const response = await api(`/courses/${id}`, "GET", null, authUser);
+                console.log("API Response:", response);
 
                 if (response.status === 200) {
                     const data = await response.json();
-                    if (data.user.id !== authUser.id) {
-                        navigate("/forbidden");
+                    console.log(data);
+                    console.log(authUser);
+                    if (data && data.user) {
+                       if (data.user.id !== authUser.id) {
+                          navigate("/forbidden");
+                       }
                     }
                     // Set course state here
                 } else if (response.status === 500) {
