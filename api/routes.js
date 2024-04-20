@@ -67,18 +67,18 @@ router.get('/courses', asyncHandler(async (req, res) => {
 // Route to return course with specific id
 router.get('/courses/:id', asyncHandler(async (req, res) => {
   const course = await Course.findByPk(req.params.id, {
-    attributes: { exclude: ['password', 'createdAt', 'updatedAt'] },
-    include: [
-      {
-        model: User,
-        as: 'user',
-        attributes: { exclude: ['password', 'createdAt', 'updatedAt'] }
-      },
-    ]
+      // ... (your attributes and include options) ...
   });
 
+  if (course) {
+      res.json(course);
+  } else {
+      res.status(404).json({ message: "Course not found" }); // Send 404 with a message
+  }
   res.json(course);
 }));
+
+  
 
 // Route to create a new course
 router.post('/courses', authenticateUser, asyncHandler(async (req, res) => {
@@ -115,12 +115,17 @@ router.post('/courses', authenticateUser, asyncHandler(async (req, res) => {
 router.put('/courses/:id', authenticateUser, asyncHandler(async (req, res) => {
   const errors = []; // Array to store errors
 
-  const course = await Course.findByPk(req.params.id);
+  const course = await Course.findByPk(req.params.id, {
+    include: [
+      { model: User, as: 'user' } // Include the associated user
+    ]
+  }); 
+
   if (course) {
-      if (course.userId !== req.currentUser.id) { // Authorization check
-          res.status(403).json({ message: 'You are not authorized to update this course.' }); // Updated status code
-          return; // Important to stop execution
-      }
+    if (course.user.id !== req.currentUser.id) { // Authorization check
+      res.status(403).json({ message: 'You are not authorized to update this course.' }); 
+      return; 
+    }
 
       // Check for missing 'title' and 'description'
       if (!req.body.title) {
