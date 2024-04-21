@@ -5,7 +5,7 @@ const User = require('./models').User;
 const Course = require('./models').Course;
 const { authenticateUser } = require('./middleware/auth-user');
 const { asyncHandler } = require('./middleware/async-handler.js');
-const { check, validationResult } = require('express-validator');
+
 
 // Construct a router instance.
 const router = express.Router();
@@ -99,13 +99,10 @@ router.post('/courses', authenticateUser, asyncHandler(async (req, res) => {
       // Create the course in the database
       try {
           const newCourse = await Course.create(req.body);
-
-          // Construct the Location header
           res.location('/');
           res.status(201).end();
 
       } catch (error) {
-          // Consider adding specific error handling, if needed
           throw error; 
       }
   }
@@ -122,7 +119,7 @@ router.put('/courses/:id', authenticateUser, asyncHandler(async (req, res) => {
   }); 
 
   if (course) {
-    if (course.user.id !== req.currentUser.id) { // Authorization check
+    if (course.user.id !== req.currentUser.id) { 
       res.status(403).json({ message: 'You are not authorized to update this course.' }); 
       return; 
     }
