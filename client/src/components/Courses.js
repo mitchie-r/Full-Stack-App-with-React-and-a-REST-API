@@ -11,25 +11,25 @@ const Courses = () => {
 
   useEffect(() => {
     const fetchCourses = async () => {
-  
+
       try {
         const response = await api("/courses", "GET", null, null)
         if (response.status === 200) {
           const responseData = await response.json();
           setCourses(responseData);
-      } else if (response.status === 500) {
+        } else if (response.status === 500) {
           navigate("/error");
-      } else if (response.status === 404) {
+        } else if (response.status === 404) {
           navigate("/notfound");
-      } else {
+        } else {
           throw new Error();
-      }
+        }
 
-  } catch (error) {
-      console.log("Error fetching and parsing data", error);
-      navigate("/error")
-  }
-}
+      } catch (error) {
+        console.log("Error fetching and parsing data", error);
+        navigate("/error")
+      }
+    }
 
     fetchCourses();
   }, [navigate]);
@@ -37,14 +37,13 @@ const Courses = () => {
   return (
     <div className="wrap main--grid">
       <h2>Courses</h2>
-      <ul>
         {courses.map((course) => (
-          <li key={course.id}>
-            <Link to={`/courses/${course.id}`}>{course.title}</Link>
-          </li>
+          <Link className="course--module course--link" to={`/courses/${course.id}`} key={course.id}>
+            <h2 className="course--label">Course</h2>
+            <h3 className="course--title">{course.title}</h3>
+          </Link>
         ))}
-      </ul>
-      <Link className="course--module course--add--module" to="courses/create">
+      <Link className="course--module course--add--module" to="/courses/create">
         <span className="course--add--title">
           <svg
             version="1.1"
