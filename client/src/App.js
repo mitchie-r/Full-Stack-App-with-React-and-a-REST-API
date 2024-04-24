@@ -23,9 +23,9 @@ function App() {
       <Header />
       <Routes>
         <Route path="/" element={<Courses />} />
-        <Route path="signin" element={<UserSignIn />} />
-        <Route path="signup" element={<UserSignUp />} />
-        <Route path="signout" element={<UserSignOut />} />
+        <Route path="/signin" element={<UserSignIn />} />
+        <Route path="/signup" element={<UserSignUp />} />
+        <Route path="/signout" element={<UserSignOut />} />
         <Route path="/courses/:id" element={<CourseDetail />} />
         <Route element={<PrivateRoute />}>
          <Route path="/courses/create" element={<CreateCourse />} />

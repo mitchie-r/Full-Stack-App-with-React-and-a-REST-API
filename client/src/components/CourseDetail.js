@@ -63,6 +63,7 @@ const CourseDetail = () => {
     <main>
       <div className="actions--bar">
         <div className="wrap">
+          {/* Checks if logged in user matches user that created the course */}
           {authUser && authUser.id === course.userId && (
             <>
               <Link className="button button-update" to={`/courses/${course.id}/update`}>
@@ -71,6 +72,7 @@ const CourseDetail = () => {
               <button className="button button-delete" onClick={handleDelete}>
                 Delete Course
               </button>
+              <Link className="button" to="/">Return to List</Link> 
             </>
           )}
         </div>
