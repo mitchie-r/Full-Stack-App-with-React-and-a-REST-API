@@ -72,7 +72,7 @@ const CourseDetail = () => {
               <button className="button button-delete" onClick={handleDelete}>
                 Delete Course
               </button>
-              <Link className="button" to="/">Return to List</Link> 
+              <Link className="button button-secondary" to="/">Return to List</Link> 
             </>
           )}
         </div>
